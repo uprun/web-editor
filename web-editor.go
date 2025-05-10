@@ -15,7 +15,8 @@ type Page struct {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "Hi there, I love %s!", r.URL.Path[1:])
+    body, _ := os.ReadFile("README.md")
+    fmt.Fprintf(w,"%s", body)
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request) {
@@ -29,6 +30,7 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
     http.HandleFunc("/view/", viewHandler)
     http.HandleFunc("/save/", saveHandler)
+    http.HandleFunc("/", handler)
     log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
