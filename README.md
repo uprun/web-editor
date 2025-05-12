@@ -1,9 +1,9 @@
 Hello
 
-this is the simplest web-editor I can think of.
+this is the evolving web-editor I can think of.
 
-to build it use `go build -x -v ./web-editor.go`
+to build it use `./build-with-time-stamp.sh`
 
-to run it use `./web-editor` after the build
+to run it use `cd bin && ./web-editor-latest` after the build
 
-navigate `http://localhost:8080/view/web-editor.html` to view file `web-editor.html` this page will also allow you to edit text files 
+navigate `http://localhost:8080/` to open the basic editor for a blank file
