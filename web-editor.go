@@ -15,23 +15,31 @@ type Page struct {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-    body, _ := os.ReadFile("README.md")
+    body, _ := os.ReadFile("web-editor.html")
     fmt.Fprintf(w,"%s", body)
 }
 
 func viewHandler(w http.ResponseWriter, r *http.Request) {
-    fmt.Printf("view %s", r.URL.Path)
-    title := r.URL.Path[len("/view/"):]
-    p, _ := loadPage(title)
+    query := r.URL.Query()
+    param_path := query.Get("path")
+    fmt.Printf("view %s", param_path)
+    fmt.Println("")
+    p, _ := loadPage(param_path)
     fmt.Fprintf(w, "%s", p.Body)
 }
 
 
 func main() {
+    fmt.Println(len(os.Args), os.Args)
+    port := "8080"
+    if len(os.Args) > 1 {
+        port = os.Args[1]
+    }
+    fmt.Printf("web-editor started at http://localhost:%s/\n", port)
     http.HandleFunc("/view/", viewHandler)
     http.HandleFunc("/save/", saveHandler)
     http.HandleFunc("/", handler)
-    log.Fatal(http.ListenAndServe(":8080", nil))
+    log.Fatal(http.ListenAndServe(":" + port, nil))
 }
 
 func loadPage(title string) (*Page, error) {

@@ -1,0 +1,1 @@
+go build -o bin/web-editor-latest -v -x ./web-editor.go && cp bin/web-editor-latest bin/web-editor-`date +"%T"`
