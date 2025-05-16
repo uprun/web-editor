@@ -15,7 +15,7 @@ type Page struct {
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
-    body, _ := os.ReadFile("../web-editor.html")
+    body, _ := os.ReadFile("../web-editor-2025-05-16-23h13m.html")
     fmt.Fprintf(w,"%s", body)
 }
 
