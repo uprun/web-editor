@@ -22,7 +22,7 @@
 var hasParams1 = new URLSearchParams(new URL(window.location.href).search);
 if (hasParams1.has("path"))
 {
-   
+   // not- really 11667
    var xhr = new XMLHttpRequest();
     xhr.open("GET", "/view?" + hasParams1.toString(), true);
     xhr.onreadystatechange = function () {
