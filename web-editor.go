@@ -7,6 +7,7 @@ import (
     "os"
     "log"
     "net/http"
+    "os/exec"
 )
 
 type Page struct {
@@ -28,6 +29,16 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, "%s", p.Body)
 }
 
+func commandHandler(w http.ResponseWriter, r *http.Request) {
+    cmd := exec.Command("ls", "-la")
+    output, err := cmd.CombinedOutput()
+    if err != nil {
+        fmt.Fprintf(w, "[web-shell] Error happened:\n%s\n[web-shell] output:\n", err, output)
+        return
+    }
+    fmt.Fprintf(w, "%s", output)
+}
+
 
 func main() {
     fmt.Println(len(os.Args), os.Args)
@@ -36,6 +47,7 @@ func main() {
         port = os.Args[1]
     }
     fmt.Printf("web-editor started at http://localhost:%s/\n", port)
+    http.HandleFunc("/command/", commandHandler)
     http.HandleFunc("/view/", viewHandler)
     http.HandleFunc("/save/", saveHandler)
     http.HandleFunc("/", handler)
