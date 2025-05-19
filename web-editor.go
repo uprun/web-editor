@@ -29,8 +29,13 @@ func viewHandler(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintf(w, "%s", p.Body)
 }
 
-func commandHandler(w http.ResponseWriter, r *http.Request) {
-    cmd := exec.Command("ls", "-la")
+func listCommandHandler(w http.ResponseWriter, r *http.Request) {
+    query := r.URL.Query()
+    param_path := query.Get("path")
+    if len(param_path) == 0 {
+        param_path = "."
+    }
+    cmd := exec.Command("ls", "-la", param_path)
     output, err := cmd.CombinedOutput()
     if err != nil {
         fmt.Fprintf(w, "[web-shell] Error happened:\n%s\n[web-shell] output:\n", err, output)
@@ -47,7 +52,7 @@ func main() {
         port = os.Args[1]
     }
     fmt.Printf("web-editor started at http://localhost:%s/\n", port)
-    http.HandleFunc("/command/", commandHandler)
+    http.HandleFunc("/list/", listCommandHandler)
     http.HandleFunc("/view/", viewHandler)
     http.HandleFunc("/save/", saveHandler)
     http.HandleFunc("/", handler)
