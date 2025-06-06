@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" id="html">
+<head>
+ <title>keeped</title>
+ <meta charset="utf-8" />
+ <meta 
+  name="viewport" 
+  content="
+   width=device-width,
+   initial-scale=1.0
+  " 
+ />
+</head>
+<script>
+u = {};
+u.d = document;
+</script>
+<script>
+u.find = id => u.d.getElementById(id);
+</script>
+<script>
+u.make_span = (c) => {
+ let s = u.d.createElement("span");
+ s.textContent = c;
+ return s;
+};
+</script>
+<script>
+u.add = function(c) {
+ const d = u.find("text-container");
+ let s = u.make_span(c);
+ d.append(s);
+};
+</script>
+<script>
+u.key_down = function() {
+ console.log(event);
+ var symbols = event.target.value;
+ if (event.key.length == 1) {
+  if ( event.metaKey == false) {
+   symbols = event.key;
+   event.target.value = '';
+  }
+ }
+ 
+ for(let c of symbols) {
+  u.add(c);
+ }
+};
+</script>
+<script>
+u.key_up = function() {
+ var symbols = event.target.value;
+ if ( symbols.length > 1)
+ {
+  console.log(symbols)
+  for(let c of symbols) {
+   u.add(c);
+  }
+ }
+ event.target.value = '';
+};
+</script>
+<body 
+ style="
+  background-color: black;
+  margin: 0;
+  overflow: hidden;
+ " 
+>
+<div 
+ id="text-container"
+ style="
+  color: lightblue;
+ "
+><span>|&gt;</span>
+</div>
+<textarea 
+ id="hello"
+ rows="1"
+ cols="2"
+ style="
+  position: absolute; 
+  bottom: 2rem; 
+  transform-origin: 50% 100%; 
+  left: 50%; 
+  transform: translate(-50%, 0px);
+  background: inherit;
+  border-width: 0.1rem;
+  border-radius: 0.2rem;
+  border-color: rosybrown;
+  width: 1.2rem;
+  color: rosybrown;
+ "
+ onkeydown="u.key_down()"
+ onkeyup="u.key_up()"
+></textarea>
+</body>
