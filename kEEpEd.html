@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" id="html">
 <head>
- <title>kEEpEd</title>
+ <title>keeped</title>
  <meta charset="utf-8" />
  <meta 
   name="viewport" 
@@ -14,12 +14,9 @@
 <script>
 u = {};
 u.d = document;
-u.key_down = function() {
- console.log(event);
-};
 </script>
 <script>
-u.find = (id) => document.getElementById(id);
+u.find = id => u.d.getElementById(id);
 </script>
 <script>
 u.make_span = (c) => {
@@ -36,14 +33,23 @@ u.add = function(c) {
 };
 </script>
 <script>
-u.key_up = function() {
- let symbols = event.target.value;
+u.key_down = function() {
+ console.log(event);
+ var symbols = "";//event.target.value;
+ if ( event.key.length == 1) {
+  symbols += event.key;
+ }
  if ( symbols !== ''){
   for(let c of symbols) {
    u.add(c);
   }
   event.target.value = '';
  }
+};
+</script>
+<script>
+u.key_up = function() {
+  event.target.value = '';
 };
 </script>
 <body 
@@ -68,6 +74,12 @@ u.key_up = function() {
   transform-origin: 50% 100%; 
   left: 50%; 
   transform: translate(-50%, 0px);
+  background: inherit;
+  border-width: 0.1rem;
+  border-radius: 0.2rem;
+  border-color: rosybrown;
+  width: 0.7rem;
+  color: rosybrown;
  "
  onkeydown="u.key_down()"
  onkeyup="u.key_up()"

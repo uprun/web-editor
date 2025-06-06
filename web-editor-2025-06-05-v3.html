@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+
+  body {
+    background: black;
+   
+  }
+  textarea {
+    background: black;
+    color: lightblue;
+  }
+  input {
+    background: black;
+    color: lightblue;
+  }
+
+</style>
+<script>
+
+var hasParams1 = new URLSearchParams(new URL(window.location.href).search);
+if (hasParams1.has("path"))
+{
+   // not- really 11667
+   var xhr = new XMLHttpRequest();
+    xhr.open("GET", "/view?" + hasParams1.toString(), true);
+    xhr.onreadystatechange = function () {
+    
+        if (this.status == 200) {
+            console.log(this.responseText);
+            if (this.responseText != "")
+            {
+                var a = this.responseText;
+                
+                
+                var the_div = document.getElementById("web-editor-id");
+                the_div.textContent = a;
+
+                var path_input = document.getElementById("path-id");
+                path_input.value = hasParams1.get("path");
+                
+            }
+    
+            // we get the returned data
+        }
+        else
+        {
+            console.log("Not yet ready")
+        }
+    
+        // end of state change: it can be after some time (async)
+    };
+    xhr.send(); 
+}
+
+</script>
+<script>
+u = {};
+u.on_key_up = function() {
+ const formData = new FormData();
+ console.log(event);
+ formData.append("body", event.target.value);
+ formData.append("title", document.getElementById("path-id").value);
+ var xhr = new XMLHttpRequest();
+ xhr.open('POST', '/save/', true);
+ xhr.onload = function () {
+    // do something to response 
+    console.log(this.responseText);
+ };
+ xhr.send(formData);
+};
+</script>
+</head>
+<body>
+<input id="path-id" name="title" type="text">
+<div>
+ <textarea 
+  id="web-editor-id"
+  name="body"
+  rows="20"
+  cols="80"
+  onkeyup="u.on_key_up()">
+ </textarea>
+</div>
+</body>
+</html>
