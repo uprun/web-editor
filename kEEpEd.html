@@ -35,21 +35,29 @@ u.add = function(c) {
 <script>
 u.key_down = function() {
  console.log(event);
- var symbols = "";//event.target.value;
- if ( event.key.length == 1) {
-  symbols += event.key;
- }
- if ( symbols !== ''){
-  for(let c of symbols) {
-   u.add(c);
+ var symbols = event.target.value;
+ if (event.key.length == 1) {
+  if ( event.metaKey == false) {
+   symbols = event.key;
+   event.target.value = '';
   }
-  event.target.value = '';
+ }
+ 
+ for(let c of symbols) {
+  u.add(c);
  }
 };
 </script>
 <script>
 u.key_up = function() {
-  event.target.value = '';
+ var symbols = event.target.value;
+ if ( symbols.length > 1)
+ {
+  for(let c of symbols) {
+   u.add(c);
+  }
+ }
+ event.target.value = '';
 };
 </script>
 <body 
@@ -64,7 +72,7 @@ u.key_up = function() {
  style="
   color: lightblue;
  "
->
+><span>|&gt;</span>
 </div>
 <input 
  id="hello"
