@@ -11,6 +11,18 @@
   " 
  />
 </head>
+<style> 
+.prevent-select {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+</style>
+<style>
+.keeped-symbol {
+ width: max-content;
+}
+</style>
 <script>
 u = {};
 u.d = document;
@@ -19,9 +31,94 @@ u.d = document;
 u.find = id => u.d.getElementById(id);
 </script>
 <script>
+u.last_created_symbol_by_local_author = "2025-06-07--plus2.0utc--11h32m--1seq--by-Oleksandr";
+</script>
+<script>
+u.symbol_under_focus = "2025-06-07--plus2.0utc--11h32m--1seq--by-Oleksandr";
+</script>
+<script>
+u.get_timezone = function() {
+ const offset = new Date().getTimezoneOffset();
+ const hours = Math.abs(offset / 60);
+ const hours_formatted = hours.toFixed(1);
+ const sign = offset > 0 ? "minus" : "plus";
+ const result = `${sign}${hours_formatted}utc`;
+ return result;
+};
+</script>
+<script>
+u.get_time = function() {
+ const now = new Date();
+ const hours = now.getHours().toString().padStart(2, '0');
+ const minutes = now.getMinutes().toString().padStart(2, '0');
+ const formattedTime = `${hours}h${minutes}m`;
+ return formattedTime;
+};
+</script>
+<script>
+u.get_date = function() {
+ var today = new Date();
+ var dd = String(today.getDate()).padStart(2, '0');
+ var mm = String(today.getMonth() + 1).padStart(2, '0');
+ var yyyy = today.getFullYear();
+ const formattedDate = `${yyyy}-${mm}-${dd}`;
+ return formattedDate;
+};
+</script>
+<script>
+u.get_sequence = function(previous, current) {
+ if (previous.dataset["timezone"] != current.dataset["timezone"]) {
+  return "1seq";
+ }
+ if (previous.dataset["date"] != current.dataset["date"]) {
+  return "1seq";
+ } 
+ if (previous.dataset["time"] != current.dataset["time"]) {
+  return "1seq";
+ }
+ let seq = previous.dataset["sequence"];
+ let number = seq.replace("seq", "");
+ return `${number+1}seq`;
+};
+</script>
+<script>
+u.get_id = function(symbol) {
+ let date = symbol.dataset["date"];
+ let timezone = symbol.dataset["timezone"];
+ let time = symbol.dataset["time"];
+ let sequence = symbol.dataset["sequence"];
+ let author = symbol.dataset["author"];
+ let result = `${date}--${timezone}--${time}--${sequence}--${author}`;
+ return result;
+};
+</script>
+<script>
 u.make_span = (c) => {
+ let focused = u.find(u.symbol_under_focus);
  let s = u.d.createElement("span");
  s.style["position"] = "absolute";
+ s.style["left"] = focused.offsetLeft + focused.offsetWidth + "px";
+ s.style["top"] = focused.offsetTop + "px";
+ 
+ s.dataset["author"] = "by-Oleksandr";
+ s.dataset["timezone"] = u.get_timezone();
+ s.dataset["time"] = u.get_time();
+ s.dataset["date"] = u.get_date();
+ let latest = u.find(u.last_created_symbol_by_local_author);
+ s.dataset["sequence"] = u.get_sequence(latest, s);
+ s.dataset["type"] = "Keeped-symbol";
+ s.classList.add("prevent-select");
+ s.classList.add("keeped-symbol");
+ let id = u.get_id(s);
+ s.id = id;
+ u.last_created_symbol_by_local_author = id;
+ u.symbol_under_focus = id;
+ 
+ if (c == " ")
+ {
+  s.innerHTML = "&nbsp;";
+  return s;
+ }
  s.textContent = c;
  return s;
 };
@@ -80,6 +177,7 @@ u.key_up = function() {
 >
 <span
  id="2025-06-07--plus2.0utc--11h32m--1seq--by-Oleksandr"
+ class="prevent-select keeped-symbol"
  data-date="2025-06-07"
  data-timezone="plus2.0utc"
  data-time="11h32m"
@@ -90,7 +188,7 @@ u.key_up = function() {
   position: absolute;
   left: 0px;
   top: 0px;
- ">1) </span>
+ ">1&nbsp;|&nbsp;</span>
 </div>
 <textarea 
  id="hello"
