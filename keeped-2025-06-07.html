@@ -21,6 +21,7 @@ u.find = id => u.d.getElementById(id);
 <script>
 u.make_span = (c) => {
  let s = u.d.createElement("span");
+ s.style["position"] = "absolute";
  s.textContent = c;
  return s;
 };
@@ -72,8 +73,24 @@ u.key_up = function() {
  id="text-container"
  style="
   color: lightblue;
+  position: absolute;
+  left: 33%;
+  top: 3rem;
  "
-><span>|&gt;</span>
+>
+<span
+ id="2025-06-07--plus2.0utc--11h32m--1seq--by-Oleksandr"
+ data-date="2025-06-07"
+ data-timezone="plus2.0utc"
+ data-time="11h32m"
+ data-sequence="1seq"
+ data-author="by-Oleksandr"
+ data-type="the-start-of-the-first-line-in-Keeped-document"
+ style="
+  position: absolute;
+  left: 0px;
+  top: 0px;
+ ">1) </span>
 </div>
 <textarea 
  id="hello"
