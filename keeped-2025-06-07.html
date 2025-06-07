@@ -11,6 +11,15 @@
   " 
  />
 </head>
+<style>
+html, 
+body {
+ height: 100%;
+ width: 100%;
+ font-size: 0.9rem;
+ font-family: 'Input Mono', monospace;
+}
+</style>
 <style> 
 .prevent-select {
   -webkit-user-select: none; /* Safari */
@@ -119,8 +128,21 @@ u.make_span = (c) => {
   s.innerHTML = "&nbsp;";
   return s;
  }
+ if (c == '\n') {
+  s.innerHTML = "&nbsp;&nbsp;&nbsp;"
+  s.dataset["type"] = "the-start-of-a-new-line-in-Keeped-document";
+  s.style["top"] = focused.offsetTop + focused.offsetHeight + "px";
+  s.style["left"] = "0px";
+  return s;
+ }
  s.textContent = c;
  return s;
+};
+</script>
+<script>
+u.find_global_position = function(id) {
+  let focused = u.find();
+  
 };
 </script>
 <script>
@@ -139,6 +161,9 @@ u.key_down = function() {
    symbols = event.key;
    event.target.value = '';
   }
+ }
+ if (event.key == "Enter") {
+  symbols = "\n";
  }
  
  for(let c of symbols) {
@@ -159,15 +184,33 @@ u.key_up = function() {
  event.target.value = '';
 };
 </script>
+<script>
+u.move_canvas_by_delta = function(deltaX, deltaY) {
+ var a_lot_of_nodes_2 = document.getElementsByClassName("keeped-document");
+ for(var individual of a_lot_of_nodes_2)
+ {
+  individual.style.top = (individual.offsetTop - deltaY) + "px";
+  individual.style.left = (individual.offsetLeft - deltaX) + "px";
+ }
+};
+</script>
+<script>
+u.body_on_wheel = function() {
+ event.preventDefault();
+ u.move_canvas_by_delta(event.deltaX, event.deltaY);
+};
+</script>
 <body 
  style="
   background-color: black;
   margin: 0;
   overflow: hidden;
  " 
+ onwheel="u.body_on_wheel()">
 >
 <div 
  id="text-container"
+ class="keeped-document"
  style="
   color: lightblue;
   position: absolute;
@@ -188,10 +231,30 @@ u.key_up = function() {
   position: absolute;
   left: 0px;
   top: 0px;
- ">1&nbsp;|&nbsp;</span>
+ ">&nbsp;&nbsp;&nbsp;</span>
 </div>
 <textarea 
  id="hello"
+ rows="1"
+ cols="2"
+ style="
+  position: absolute; 
+  bottom: 2rem; 
+  transform-origin: 0% 0%; 
+  left: 50%; 
+  transform: translate(-50%, 0px);
+  background: inherit;
+  border-width: 0.1rem;
+  border-radius: 0.2rem;
+  border-color: rosybrown;
+  width: 1.2rem;
+  color: rosybrown;
+ "
+ onkeydown="u.key_down()"
+ onkeyup="u.key_up()"
+></textarea>
+<textarea 
+ id="hello-1"
  rows="1"
  cols="2"
  style="
