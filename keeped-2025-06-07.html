@@ -77,7 +77,7 @@ u.get_sequence = function(previous, current) {
   return "1seq";
  }
  let seq = previous.dataset["sequence"];
- let number = seq.replace("seq", "");
+ let number = parseInt(seq.replace("seq", ""));
  return `${number+1}seq`;
 };
 </script>
