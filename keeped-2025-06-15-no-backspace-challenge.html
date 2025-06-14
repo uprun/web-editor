@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en" id="html">
+<head>
+ <title>keeped</title>
+ <meta charset="utf-8" />
+ <meta 
+  name="viewport" 
+  content="
+   width=device-width,
+   initial-scale=1.0
+  " 
+ />
+</head>
+<style>
+html, 
+body {
+ height: 100%;
+ width: 100%;
+ font-size: 0.9rem;
+ font-family: 'Input Mono', monospace;
+}
+</style>
+<style> 
+.prevent-select {
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+</style>
+<style>
+.keeped-symbol {
+ width: max-content;
+}
+</style>
+<script>
+u = {};
+u.d = document;
+</script>
+<script>
+u.find = id => u.d.getElementById(id);
+</script>
+<script>
+u.last_created_symbol_by_local_author = "2025-06-07--plus2.0utc--11h32m--1seq--by-Oleksandr";
+</script>
+<script>
+u.symbol_under_focus = "2025-06-07--plus2.0utc--11h32m--1seq--by-Oleksandr";
+</script>
+<script>
+u.get_timezone = function() {
+ const offset = new Date().getTimezoneOffset();
+ const hours = Math.abs(offset / 60);
+ const hours_formatted = hours.toFixed(1);
+ const sign = offset > 0 ? "minus" : "plus";
+ const result = `${sign}${hours_formatted}utc`;
+ return result;
+};
+</script>
+<script>
+u.get_time = function() {
+ const now = new Date();
+ const hours = now.getHours().toString().padStart(2, '0');
+ const minutes = now.getMinutes().toString().padStart(2, '0');
+ const formattedTime = `${hours}h${minutes}m`;
+ return formattedTime;
+};
+</script>
+<script>
+u.get_date = function() {
+ var today = new Date();
+ var dd = String(today.getDate()).padStart(2, '0');
+ var mm = String(today.getMonth() + 1).padStart(2, '0');
+ var yyyy = today.getFullYear();
+ const formattedDate = `${yyyy}-${mm}-${dd}`;
+ return formattedDate;
+};
+</script>
+<script>
+u.get_sequence = function(previous, current) {
+ if (previous.dataset["timezone"] != current.dataset["timezone"]) {
+  return "1seq";
+ }
+ if (previous.dataset["date"] != current.dataset["date"]) {
+  return "1seq";
+ } 
+ if (previous.dataset["time"] != current.dataset["time"]) {
+  return "1seq";
+ }
+ let seq = previous.dataset["sequence"];
+ let number = parseInt(seq.replace("seq", ""));
+ return `${number+1}seq`;
+};
+</script>
+<script>
+u.get_id = function(symbol) {
+ let date = symbol.dataset["date"];
+ let timezone = symbol.dataset["timezone"];
+ let time = symbol.dataset["time"];
+ let sequence = symbol.dataset["sequence"];
+ let author = symbol.dataset["author"];
+ let result = `${date}--${timezone}--${time}--${sequence}--${author}`;
+ return result;
+};
+</script>
+<script>
+u.make_span = (c) => {
+ let focused = u.find(u.symbol_under_focus);
+ let s = u.d.createElement("span");
+ s.style["position"] = "absolute";
+ s.style["left"] = focused.offsetLeft + focused.offsetWidth + "px";
+ s.style["top"] = focused.offsetTop + "px";
+ 
+ s.dataset["author"] = "by-Oleksandr";
+ s.dataset["timezone"] = u.get_timezone();
+ s.dataset["time"] = u.get_time();
+ s.dataset["date"] = u.get_date();
+ let latest = u.find(u.last_created_symbol_by_local_author);
+ s.dataset["sequence"] = u.get_sequence(latest, s);
+ s.dataset["type"] = "Keeped-symbol";
+ s.classList.add("prevent-select");
+ s.classList.add("keeped-symbol");
+ let id = u.get_id(s);
+ s.id = id;
+ u.last_created_symbol_by_local_author = id;
+ u.symbol_under_focus = id;
+ 
+ if (c == " ")
+ {
+  s.innerHTML = "&nbsp;";
+  return s;
+ }
+ if (c == '\n') {
+  s.innerHTML = "&nbsp;&nbsp;&nbsp;"
+  s.dataset["type"] = "the-start-of-a-new-line-in-Keeped-document";
+  s.style["top"] = focused.offsetTop + focused.offsetHeight + "px";
+  s.style["left"] = "0px";
+  return s;
+ }
+ s.textContent = c;
+ return s;
+};
+</script>
+<script>
+u.pack_value = function(value, units) {
+ let creator = arguments.callee.caller.name;
+ var res = {
+  "value": value,
+  "units": units,
+  "created-at": creator
+ }
+ return res;
+};
+</script>
+<script>
+u.find_global_position = function(id) {
+ let focused = u.find(id);
+ var result = {};
+ result.offset_left = focused.offsetLeft + focused.offsetWidth;
+ result.offset_left += focused.parentElement.offsetLeft;
+ result.offset_left = u.pack_value(result.offset_left, "px");
+ // but on other hand I can do something different
+
+ result.offset_top = focused.offsetTop; 
+ result.offset_top += focused.parentElement.offsetTop;
+ result.offset_top = u.pack_value(result.offset_top, "px");
+ return result;
+};
+</script>
+<script>
+u.all_subscriptions = {};
+u.subscribe = function(event_name, handler) {
+ if ( event_name in u.all_subscriptions) {
+  u.all_subscriptions[event_name].push(handler);
+ }
+ else {
+  u.all_subscriptions[event_name] = [handler];
+ }
+};
+</script>
+<script>
+u.publish = function(event_name, context) {
+ if ( event_name in u.all_subscriptions) {
+  let all_callbacks = u.all_subscriptions[event_name];
+  for(let callback of all_callbacks) {
+   callback(context);
+  }
+ }
+};
+</script>
+<script>
+u.add = function(c) {
+ const d = u.find("text-container");
+ let s = u.make_span(c);
+ d.append(s);
+ u.publish("u.add", s);
+};
+</script>
+<script>
+u.key_down = function() {
+ if (event.key.length == 1) {
+  if ( event.metaKey == false) {
+   u.add(event.key);
+   event.target.innerHTML = '';
+  }
+ }
+ if (event.key == "Enter") {
+  u.add("\n");
+ }
+};
+</script>
+<script>
+u.key_up = function() {
+ var symbols = "" ;//event.target.innerHTML;
+ if ( symbols.length > 1)
+ {
+  for(let c of symbols) {
+   u.add(c);
+  }
+ }
+ event.target.innerHTML = '';
+};
+</script>
+<script>
+u.on_paste = function() {
+ // Stop data actually being pasted into div
+ event.stopPropagation();
+ event.preventDefault();
+
+  // Get pasted data via clipboard API
+ var clipboardData = event.clipboardData || window.clipboardData;
+ var pastedData = clipboardData.getData('Text');
+
+ // Do whatever with pasteddata
+ for(let c of pastedData) {
+  u.add(c);
+ }
+};
+</script>
+<script>
+u.move_canvas_by_delta = function(deltaX, deltaY) {
+ var a_lot_of_nodes_2 = document.getElementsByClassName("keeped-document");
+ for(var individual of a_lot_of_nodes_2)
+ {
+  individual.style.top = (individual.offsetTop - deltaY) + "px";
+  individual.style.left = (individual.offsetLeft - deltaX) + "px";
+ }
+ console.log("dx", deltaX, "dy", deltaY);
+ var focus = u.find("hello");
+ focus.style.top = (focus.offsetTop - deltaY) + "px";
+ focus.style.left = (focus.offsetLeft - deltaX) + "px";
+};
+</script>
+<script>
+u.body_on_wheel = function() {
+ event.preventDefault();
+ u.move_canvas_by_delta(event.deltaX, event.deltaY);
+};
+</script>
+<script>
+u.document_on_ready_state_change = function() {
+ let focus = u.find("hello");
+ let offset = u.find_global_position("2025-06-07--plus2.0utc--11h32m--1seq--by-Oleksandr");
+ focus.style.top = offset.offset_top.value + "px";
+ focus.style.left = offset.offset_left.value + "px";
+};
+</script>
+<script>
+u.move_focus_after_symbol = function(symbol) {
+ let focus = u.find("hello");
+ let offset = u.find_global_position(symbol.id);
+ focus.style.top = offset.offset_top.value + "px";
+ focus.style.left = offset.offset_left.value + "px";
+};
+u.subscribe("u.add", u.move_focus_after_symbol);
+</script>
+<script>
+u.body_on_load = function() {
+ console.log("body_on_load");
+ u.document_on_ready_state_change();
+};
+</script>
+<body 
+ style="
+  background-color: black;
+  margin: 0;
+  overflow: hidden;
+ " 
+ onload="u.body_on_load()"
+ onwheel="u.body_on_wheel()">
+>
+<div 
+ id="text-container"
+ class="keeped-document"
+ style="
+  color: lightblue;
+  position: absolute;
+  left: 33%;
+  top: 3rem;
+ "
+>
+<span
+ id="2025-06-07--plus2.0utc--11h32m--1seq--by-Oleksandr"
+ class="prevent-select keeped-symbol"
+ data-date="2025-06-07"
+ data-timezone="plus2.0utc"
+ data-time="11h32m"
+ data-sequence="1seq"
+ data-author="by-Oleksandr"
+ data-type="the-start-of-the-first-line-in-Keeped-document"
+ style="
+  position: absolute;
+  left: 0px;
+  top: 0px;
+ ">&nbsp;&nbsp;&nbsp;</span>
+</div>
+<div 
+ id="hello"
+ rows="1"
+ cols="2"
+ style="
+  position: absolute;
+  background: transparent;
+  border-width: 0.1rem;
+  border-radius: 0.2rem;
+  border-color: rosybrown;
+  width: 1.2rem;
+  color: rosybrown;
+  height: 1.2rem;
+  border-style: solid;
+ "
+ contenteditable="true"
+ onkeydown="u.key_down()"
+ onkeyup="u.key_up()"
+ onpaste="u.on_paste()"
+></div>
+</body>
