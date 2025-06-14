@@ -166,10 +166,32 @@ u.find_global_position = function(id) {
 };
 </script>
 <script>
+u.all_subscriptions = {};
+u.subscribe = function(event_name, handler) {
+ if ( event_name in u.all_subscriptions) {
+  u.all_subscriptions[event_name].push(handler);
+ }
+ else {
+  u.all_subscriptions[event_name] = [handler];
+ }
+};
+</script>
+<script>
+u.publish = function(event_name, context) {
+ if ( event_name in u.all_subscriptions) {
+  let all_callbacks = u.all_subscriptions[event_name];
+  for(let callback of all_callbacks) {
+   callback(context);
+  }
+ }
+};
+</script>
+<script>
 u.add = function(c) {
  const d = u.find("text-container");
  let s = u.make_span(c);
  d.append(s);
+ u.publish("u.add", s);
 };
 </script>
 <script>
@@ -240,6 +262,15 @@ u.document_on_ready_state_change = function() {
  focus.style.top = offset.offset_top.value + "px";
  focus.style.left = offset.offset_left.value + "px";
 };
+</script>
+<script>
+u.move_focus_after_symbol = function(symbol) {
+ let focus = u.find("hello");
+ let offset = u.find_global_position(symbol.id);
+ focus.style.top = offset.offset_top.value + "px";
+ focus.style.left = offset.offset_left.value + "px";
+};
+u.subscribe("u.add", u.move_focus_after_symbol);
 </script>
 <script>
 u.body_on_load = function() {
