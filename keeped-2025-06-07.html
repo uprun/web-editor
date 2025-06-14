@@ -140,9 +140,29 @@ u.make_span = (c) => {
 };
 </script>
 <script>
+u.pack_value = function(value, units) {
+ let creator = arguments.callee.caller.name;
+ var res = {
+  "value": value,
+  "units": units,
+  "created-at": creator
+ }
+ return res;
+};
+</script>
+<script>
 u.find_global_position = function(id) {
-  let focused = u.find();
-  
+ let focused = u.find(id);
+ var result = {};
+ result.offset_left = focused.offsetLeft + focused.offsetWidth;
+ result.offset_left += focused.parentElement.offsetLeft;
+ result.offset_left = u.pack_value(result.offset_left, "px");
+ // but on other hand I can do something different
+
+ result.offset_top = focused.offsetTop; 
+ result.offset_top += focused.parentElement.offsetTop;
+ result.offset_top = u.pack_value(result.offset_top, "px");
+ return result;
 };
 </script>
 <script>
@@ -154,34 +174,43 @@ u.add = function(c) {
 </script>
 <script>
 u.key_down = function() {
- console.log(event);
- var symbols = event.target.value;
  if (event.key.length == 1) {
   if ( event.metaKey == false) {
-   symbols = event.key;
-   event.target.value = '';
+   u.add(event.key);
+   event.target.innerHTML = '';
   }
  }
  if (event.key == "Enter") {
-  symbols = "\n";
- }
- 
- for(let c of symbols) {
-  u.add(c);
+  u.add("\n");
  }
 };
 </script>
 <script>
 u.key_up = function() {
- var symbols = event.target.value;
+ var symbols = "" ;//event.target.innerHTML;
  if ( symbols.length > 1)
  {
-  console.log(symbols)
   for(let c of symbols) {
    u.add(c);
   }
  }
- event.target.value = '';
+ event.target.innerHTML = '';
+};
+</script>
+<script>
+u.on_paste = function() {
+ // Stop data actually being pasted into div
+ event.stopPropagation();
+ event.preventDefault();
+
+  // Get pasted data via clipboard API
+ var clipboardData = event.clipboardData || window.clipboardData;
+ var pastedData = clipboardData.getData('Text');
+
+ // Do whatever with pasteddata
+ for(let c of pastedData) {
+  u.add(c);
+ }
 };
 </script>
 <script>
@@ -192,6 +221,10 @@ u.move_canvas_by_delta = function(deltaX, deltaY) {
   individual.style.top = (individual.offsetTop - deltaY) + "px";
   individual.style.left = (individual.offsetLeft - deltaX) + "px";
  }
+ console.log("dx", deltaX, "dy", deltaY);
+ var focus = u.find("hello");
+ focus.style.top = (focus.offsetTop - deltaY) + "px";
+ focus.style.left = (focus.offsetLeft - deltaX) + "px";
 };
 </script>
 <script>
@@ -200,12 +233,27 @@ u.body_on_wheel = function() {
  u.move_canvas_by_delta(event.deltaX, event.deltaY);
 };
 </script>
+<script>
+u.document_on_ready_state_change = function() {
+ let focus = u.find("hello");
+ let offset = u.find_global_position("2025-06-07--plus2.0utc--11h32m--1seq--by-Oleksandr");
+ focus.style.top = offset.offset_top.value + "px";
+ focus.style.left = offset.offset_left.value + "px";
+};
+</script>
+<script>
+u.body_on_load = function() {
+ console.log("body_on_load");
+ u.document_on_ready_state_change();
+};
+</script>
 <body 
  style="
   background-color: black;
   margin: 0;
   overflow: hidden;
  " 
+ onload="u.body_on_load()"
  onwheel="u.body_on_wheel()">
 >
 <div 
@@ -233,44 +281,24 @@ u.body_on_wheel = function() {
   top: 0px;
  ">&nbsp;&nbsp;&nbsp;</span>
 </div>
-<textarea 
+<div 
  id="hello"
  rows="1"
  cols="2"
  style="
-  position: absolute; 
-  bottom: 2rem; 
-  transform-origin: 0% 0%; 
-  left: 50%; 
-  transform: translate(-50%, 0px);
-  background: inherit;
+  position: absolute;
+  background: transparent;
   border-width: 0.1rem;
   border-radius: 0.2rem;
   border-color: rosybrown;
   width: 1.2rem;
   color: rosybrown;
+  height: 1.2rem;
+  border-style: solid;
  "
+ contenteditable="true"
  onkeydown="u.key_down()"
  onkeyup="u.key_up()"
-></textarea>
-<textarea 
- id="hello-1"
- rows="1"
- cols="2"
- style="
-  position: absolute; 
-  bottom: 2rem; 
-  transform-origin: 50% 100%; 
-  left: 50%; 
-  transform: translate(-50%, 0px);
-  background: inherit;
-  border-width: 0.1rem;
-  border-radius: 0.2rem;
-  border-color: rosybrown;
-  width: 1.2rem;
-  color: rosybrown;
- "
- onkeydown="u.key_down()"
- onkeyup="u.key_up()"
-></textarea>
+ onpaste="u.on_paste()"
+></div>
 </body>
