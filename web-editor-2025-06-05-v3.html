@@ -71,17 +71,45 @@ u.on_key_up = function() {
  xhr.send(formData);
 };
 </script>
+<style>
+html, body {
+  height: 100%;
+  width: 100%;
+  font-size: 0.9rem;
+  font-family: 'Input Mono', monospace;
+}
+.web-editor {
+ width: 100$;
+ height: calc(100% - 1rem);
+}
+</style>
 </head>
-<body>
+<body
+ style="
+  background-color: black;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;" 
+>
 <input id="path-id" name="title" type="text">
-<div>
+<div
+ style="
+  width: 100%;
+  height: calc(100% - 2rem);
+ "
+>
  <textarea 
   id="web-editor-id"
+  style="
+   width: 100%;
+   height: 100%;
+  "
+  class="web-editor"
   name="body"
-  rows="20"
-  cols="80"
   onkeyup="u.on_key_up()">
  </textarea>
 </div>
+
 </body>
 </html>

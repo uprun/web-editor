@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" id="html">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>my-canvas</title>
+</head>
+<style>
+    .prevent-select {
+        -webkit-user-select: none; /* Safari */
+        -ms-user-select: none; /* IE 10 and IE 11 */
+        user-select: none; /* Standard syntax */
+    }
+
+    html, 
+    body {
+        height: 100%;
+        width: 100%;
+        font-size: 0.9rem;
+        font-family: 'Input Mono', monospace;
+    }
+</style>
+<script>
+    just_notes = {};
+    just_notes.shift_canvas_by_delta = function(deltaX, deltaY)
+    {
+        just_notes.debug_logging && console.log({deltaX: deltaX, deltaY: deltaY});
+        var a_lot_of_nodes_2 = document.getElementsByClassName("actual-document");
+        for(var individual of a_lot_of_nodes_2)
+        {
+            individual.style.top = (individual.offsetTop - deltaY) + "px";
+            individual.style.left = (individual.offsetLeft - deltaX) + "px";
+
+        }
+    };
+</script>
+<script>
+    just_notes.body_on_wheel = function()
+    {
+        event.preventDefault();
+        just_notes.debug_logging && console.log(event);
+        just_notes.shift_canvas_by_delta(event.deltaX, event.deltaY);
+    };
+</script>
+<body 
+    id="body"
+    style="background-color: black;
+        margin: 0;
+        overflow: hidden;" 
+    class="cursor-drag"
+    onwheel="just_notes.body_on_wheel()">
+     <iframe class="actual-document" 
+         onwheel="just_notes.body_on_wheel()"
+         src="/" 
+         style="height:35rem;width:26rem; position: absolute;" 
+         title="description"></iframe> 
+<div 
+ id="front-glass"
+ style="
+  position: absolute;
+  width: 100%;
+  height: 100%;
+ "></div>
+</body>
+</html>
